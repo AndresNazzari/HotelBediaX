@@ -1,5 +1,6 @@
 ﻿using BediaX.Application.Destinations.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BediaX.Application.Destinations.Commands;
 
@@ -9,14 +10,17 @@ namespace BediaX.Application.Destinations.Commands;
 internal sealed class UpdateDestinationCommandHandler : IRequestHandler<UpdateDestinationCommand, bool>
 {
     private readonly IDestinationRepository _repository;
-    
+    private readonly IMemoryCache _cache;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateDestinationCommandHandler"/> class.
     /// </summary>
     /// <param name="repository">The repository used to access and update destination data.</param>
-    public UpdateDestinationCommandHandler(IDestinationRepository repository)
+    /// <param name="cache">The memory cache used to invalidate cached destination queries after creation.</param>
+    public UpdateDestinationCommandHandler(IDestinationRepository repository, IMemoryCache cache)
     {
         _repository = repository;
+        _cache = cache;
     }
 
     /// <summary>
@@ -36,6 +40,9 @@ internal sealed class UpdateDestinationCommandHandler : IRequestHandler<UpdateDe
         destination.Update(command.Name, command.Description, command.CountryId, command.DestinationTypeId, command.IsActive);
         await _repository.UpdateAsync(destination, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
+        
+        _cache.Remove(Shared.Constants.Cache.AllDestinationsCacheKey);
+
         return true;
     }
 }

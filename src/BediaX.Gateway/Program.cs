@@ -33,6 +33,8 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 // Swagger UI limitado a Dev
