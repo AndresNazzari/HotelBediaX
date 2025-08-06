@@ -27,9 +27,8 @@ HotelBediaX/
 ├── BediaX.API                # HTTP entrypoint (Controllers)
 ├── BediaX.Application        # Use Cases, DTOs, Interfaces
 ├── BediaX.Domain             # Domain Entities
-├── BediaX.Infrastructure     # Repositories, DbContext, Migrations
+├── BediaX.Infrastructure     # Repositories, DbContext, Migrations, SQLITE database
 ├── BediaX.Shared             # Shared utilities (e.g. Pagination)
-├── data/                     # SQLite database (auto-generated)
 └── README.md                 # This file
 ```
 
@@ -124,7 +123,7 @@ There you can explore and test all the endpoints interactively.
 
 ## 🧼 Notes
 
-* The database file `bediax.db` is automatically created in the `/data` folder.
+* The database file `bediax.db` is automatically created in the `BediaX.Infrastructure/data` folder.
 * You can delete the file and rerun migrations to reset the state.
 * The API is prepared to handle large datasets (> 200,000 records).
 
