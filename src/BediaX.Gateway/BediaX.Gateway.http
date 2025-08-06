@@ -1,0 +1,6 @@
+@BediaX.Gateway_HostAddress = http://localhost:5238
+
+GET {{BediaX.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
