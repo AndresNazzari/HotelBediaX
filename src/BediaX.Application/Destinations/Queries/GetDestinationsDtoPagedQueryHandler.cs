@@ -1,9 +1,9 @@
-﻿using BediaX.Application.Destinations.DTOs;
+﻿using BediaX.Application.Common.Caching;
+using BediaX.Application.Destinations.DTOs;
 using BediaX.Application.Destinations.Interfaces;
 using BediaX.Shared.Cache;
 using BediaX.Shared.Pagination;
 using MediatR;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace BediaX.Application.Destinations.Queries;
 
@@ -13,17 +13,17 @@ namespace BediaX.Application.Destinations.Queries;
 internal sealed class GetDestinationsDtoPagedQueryHandler : IRequestHandler<GetDestinationsDtoPagedQuery, PagedResult<DestinationDto>>
 {
     private readonly IDestinationRepository _repository;
-    private readonly IMemoryCache _cache;
+    private readonly CacheHelper  _cacheHelper;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetDestinationsDtoPagedQueryHandler"/> class.
     /// </summary>
     /// <param name="repository">The repository used to access paginated destination data.</param>
-    /// <param name="cache">The memory cache used to invalidate cached destination queries after creation.</param>
-    public GetDestinationsDtoPagedQueryHandler(IDestinationRepository repository, IMemoryCache cache)
+    /// <param name="cacheHelper">The memory cacheHelper used to invalidate cached destination queries after creation.</param>
+    public GetDestinationsDtoPagedQueryHandler(IDestinationRepository repository, CacheHelper cacheHelper)
     {
         _repository = repository;
-        _cache = cache;
+        _cacheHelper = cacheHelper;
     }
 
     /// <summary>
@@ -34,9 +34,13 @@ internal sealed class GetDestinationsDtoPagedQueryHandler : IRequestHandler<GetD
     /// <returns>A paginated result of <see cref="DestinationDto"/> items.</returns>
     public async Task<PagedResult<DestinationDto>> Handle(GetDestinationsDtoPagedQuery query, CancellationToken cancellationToken)
     { 
-        var destinations = await _cache.RememberAsync(
-            Shared.Constants.Cache.AllDestinationsCacheKey,
-            TimeSpan.FromMinutes(10),
+        var filterPart = string.IsNullOrWhiteSpace(query.Filter) ? string.Empty : query.Filter.Trim();
+        var key = $"{CacheRegions.Destinations}_{query.Page}_{query.PageSize}_{filterPart}";
+
+        var destinations = await _cacheHelper.RememberAsync(
+            key,
+            CacheRegions.Destinations,
+            TimeSpan.FromMinutes(1),
             () => _repository.GetPagedAsync(query.Page, query.PageSize, query.Filter, cancellationToken)
         );
         

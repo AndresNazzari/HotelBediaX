@@ -60,4 +60,6 @@ public class CatalogController : ControllerBase
     {
         return Ok(await _mediator.Send(new GetDestinationTypesQuery(), cancellationToken));
     }
+    
+    
 }

@@ -1,4 +1,6 @@
-﻿using BediaX.Application.Destinations.Interfaces;
+﻿using BediaX.Application.Common.Caching;
+using BediaX.Application.Destinations.Interfaces;
+using BediaX.Shared.Cache;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -10,17 +12,17 @@ namespace BediaX.Application.Destinations.Commands;
 internal sealed class UpdateDestinationCommandHandler : IRequestHandler<UpdateDestinationCommand, bool>
 {
     private readonly IDestinationRepository _repository;
-    private readonly IMemoryCache _cache;
+    private readonly ICacheRegionService _cacheRegionService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateDestinationCommandHandler"/> class.
     /// </summary>
     /// <param name="repository">The repository used to access and update destination data.</param>
     /// <param name="cache">The memory cache used to invalidate cached destination queries after creation.</param>
-    public UpdateDestinationCommandHandler(IDestinationRepository repository, IMemoryCache cache)
+    public UpdateDestinationCommandHandler(IDestinationRepository repository, ICacheRegionService cacheRegionServiceRegionService)
     {
         _repository = repository;
-        _cache = cache;
+        _cacheRegionService = cacheRegionServiceRegionService;
     }
 
     /// <summary>
@@ -41,7 +43,7 @@ internal sealed class UpdateDestinationCommandHandler : IRequestHandler<UpdateDe
         await _repository.UpdateAsync(destination, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
         
-        _cache.Remove(Shared.Constants.Cache.AllDestinationsCacheKey);
+        _cacheRegionService.InvalidateRegion(CacheRegions.Destinations);
 
         return true;
     }

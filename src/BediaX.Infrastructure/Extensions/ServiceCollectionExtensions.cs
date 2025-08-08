@@ -1,6 +1,8 @@
 ﻿using BediaX.Application.Catalog.Interfaces;
+using BediaX.Application.Common.Caching;
 using BediaX.Application.Destinations.Interfaces;
 using BediaX.Infrastructure.Catalog.Repositories;
+using BediaX.Infrastructure.Common.Caching;
 using BediaX.Infrastructure.Destinations.Data;
 using BediaX.Infrastructure.Destinations.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICountryRepository, CountryRepository>();
         services.AddScoped<IDestinationTypeRepository, DestinationTypeRepository>();
         
+        //  CACHING
+        services.AddMemoryCache();                                          
+        services.AddSingleton<ICacheRegionService, CacheRegionService>();   
+        services.AddScoped<CacheHelper>();                               
+
         return services;
     }
 }
