@@ -12,6 +12,6 @@ namespace BediaX.Application.Destinations.Queries;
 /// <param name="Filter">An optional search term to filter destinations by name or description.</param>
 public record GetDestinationsDtoPagedQuery(
     int Page = 1,
-    int PageSize = 20,
+    int PageSize = 10,
     string? Filter = null
 ) : IRequest<PagedResult<DestinationDto>>;

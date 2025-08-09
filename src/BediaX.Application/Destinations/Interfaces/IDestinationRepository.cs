@@ -18,6 +18,7 @@ public interface IDestinationRepository
 
     /// <summary>
     /// Retrieves a destination as a DTO by its identifier.
+    /// The returned DTO includes CountryId, Country name, DestinationTypeId and DestinationType name.
     /// </summary>
     /// <param name="id">The destination identifier.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
@@ -34,6 +35,7 @@ public interface IDestinationRepository
 
     /// <summary>
     /// Retrieves a paginated list of destination DTOs based on the given filter and paging parameters.
+    /// Each DTO includes CountryId, Country name, DestinationTypeId and DestinationType name.
     /// </summary>
     /// <param name="page">The page number (starting at 1).</param>
     /// <param name="pageSize">The number of items per page.</param>

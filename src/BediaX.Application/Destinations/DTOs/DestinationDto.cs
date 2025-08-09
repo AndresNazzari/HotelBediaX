@@ -7,12 +7,16 @@
 /// <param name="Name">The name of the destination.</param>
 /// <param name="Description">A brief description of the destination.</param>
 /// <param name="IsActive">Indicates whether the destination is active.</param>
+/// <param name="CountryId">The identifier of the associated country.</param>
 /// <param name="Country">The name of the associated country.</param>
+/// <param name="DestinationTypeId">The identifier of the destination type.</param>
 /// <param name="DestinationType">The type/category of the destination.</param>
 public record DestinationDto(
     int Id,
     string Name,
     string Description,
     bool IsActive,
+    int CountryId,
     string Country,
+    int DestinationTypeId,
     string DestinationType);

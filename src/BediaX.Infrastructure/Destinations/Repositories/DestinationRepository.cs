@@ -35,7 +35,7 @@ public class DestinationRepository : IDestinationRepository
 
     /// <summary>
     /// Retrieves a destination by its ID and projects it as a <see cref="DestinationDto"/>.
-    /// Includes related entities like Country and DestinationType.
+    /// Includes identifiers and names for Country and DestinationType.
     /// </summary>
     /// <param name="id">The destination ID.</param>
     /// <param name="cancellationToken">Token to cancel the asynchronous operation.</param>
@@ -43,13 +43,16 @@ public class DestinationRepository : IDestinationRepository
     public async Task<DestinationDto?> GetDtoByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await _dbContext.Destinations
+            .AsNoTracking()
             .Where(d => d.Id == id)
             .Select(d => new DestinationDto(
                 d.Id,
                 d.Name,
                 d.Description,
                 d.IsActive,
+                d.CountryId,
                 d.Country.Name,
+                d.DestinationTypeId,
                 d.DestinationType.Name))
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -67,6 +70,7 @@ public class DestinationRepository : IDestinationRepository
 
     /// <summary>
     /// Retrieves a paginated list of destination DTOs with optional name filtering.
+    /// Each item includes CountryId and DestinationTypeId along with their names.
     /// </summary>
     /// <param name="page">The page number (starting at 1).</param>
     /// <param name="pageSize">The number of items per page.</param>
@@ -75,11 +79,12 @@ public class DestinationRepository : IDestinationRepository
     /// <returns>A paginated result containing destination DTOs.</returns>
     public async Task<PagedResult<DestinationDto>> GetPagedAsync(int page, int pageSize, string? filter, CancellationToken cancellationToken)
     {
-        var query = _dbContext.Destinations.AsQueryable();
+        var query = _dbContext.Destinations.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter))
         {
-            query = query.Where(d => d.Name.Contains(filter));
+            var normalized = filter.Trim();
+            query = query.Where(d => d.Name.Contains(normalized));
         }
 
         var total = await query.CountAsync(cancellationToken);
@@ -93,9 +98,10 @@ public class DestinationRepository : IDestinationRepository
                 d.Name,
                 d.Description,
                 d.IsActive,
+                d.CountryId,
                 d.Country.Name,
+                d.DestinationTypeId,
                 d.DestinationType.Name))
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         return new PagedResult<DestinationDto> { Items = items, Total = total };

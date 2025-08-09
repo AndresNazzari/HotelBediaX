@@ -31,6 +31,7 @@ public class DestinationsController : ControllerBase
     /// </summary>
     /// <remarks>
     /// Optional <c>filter</c> parameter performs a <c>contains</c> match on the destination <c>Name</c>.
+    /// Each item includes <c>CountryId</c>, <c>Country</c>, <c>DestinationTypeId</c> and <c>DestinationType</c>.
     /// </remarks>
     /// <param name="page">Page number (1-based).</param>
     /// <param name="pageSize">Number of records per page (default = 20).</param>
